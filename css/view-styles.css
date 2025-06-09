@@ -1,0 +1,58 @@
+#nora-kim-content, #zoe-brooks-content {
+  display: none;
+}
+.hidden {
+  display: none !important;
+}
+
+#skinny-bar {
+  position: relative; /* Ensure it's a positioning context for the absolute menu */
+}
+
+.skinny-bar-item {
+  cursor: grab;
+  user-select: none; /* Prevent text selection while dragging */
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; /* Smooth transition for dragging */
+}
+
+.skinny-bar-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.skinny-bar-placeholder {
+  height: 48px; /* Match item height */
+  width: 48px;  /* Match item width */
+  margin: 4px 0; /* Match item vertical gap (d-g8 means gap: 8px, so 4px margin on each side) */
+  background-color: var(--dt-color-surface-moderate-active, rgba(0,0,0,0.05)); /* A subtle background */
+  border: 2px dashed var(--dt-color-border-subtle, #ccc);
+  border-radius: var(--dt-border-radius-800, 8px); /* Square with rounded corners, d-bar-rad8 equivalent */
+  box-sizing: border-box;
+  /* display: none; Initially hidden by not being in DOM or JS sets display:none */
+  /* Optional: slightly lift or scale the item */
+  /* transform: scale(1.05); */
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(124, 82, 255, 0.7); /* User-specified purple #7C52FF */
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px 10px rgba(124, 82, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(124, 82, 255, 0);
+  }
+}
+
+.pulsate-animation {
+  animation: pulsate 2s infinite;
+}
+
+/* Skinny Bar Settings Menu Visibility */
+.settings-menu--open {
+  display: block !important; /* Or 'flex' if its internal structure requires it, but 'block' is typical for popovers */
+}

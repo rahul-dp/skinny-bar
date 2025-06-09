@@ -1,0 +1,10 @@
+/* Component-specific styles */
+
+/* Right Sidebar View Switching */
+.right-bar-view {
+  display: none; /* Hide all views by default */
+}
+
+.right-bar-view:target {
+  display: flex; /* Show the targeted view */
+}

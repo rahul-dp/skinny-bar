@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dialtone Layout (Corrected)</title>
+    <!-- Dialtone Stylesheets -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@dialpad/dialtone/dist/css/dialtone-default-theme.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@dialpad/dialtone/dist/css/dialtone.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/view-styles.css" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body class="d-d-flex d-fd-column d-h100vh dt-bg-canvas-subtle">
+    <!-- Top Bar -->
+    <div
+      class="d-d-flex d-fd-row d-jc-space-between d-h64 d-bgc-secondary d-bb d-baw1 d-bc-default d-fc-critical d-fw-bold d-p16 dt-text-center d-flex-shrink-0"
+    >
+      <div>top-bar-left</div>
+      <div class="d-fl-shrink1">search</div>
+      <div>top-bar-right</div>
+    </div>
+    <!-- Banner Component -->
+    <aside
+      class="d-banner d-banner--base d-banner--important d-banner--pinned d-ps-relative"
+      role="alert"
+      aria-hidden="false"
+    >
+      <div
+        class="d-banner__dialog"
+        role="alertdialog"
+        aria-labelledy="info-alert-title"
+        aria-describedby="info-alert-desc"
+      >
+        <div class="d-notice__icon">
+          <svg
+            class="d-icon--size-400 d-icon d-icon--salesforce-glyph"
+            data-qa="dt-icon"
+            aria-hidden="true"
+            role="img"
+            data-name="Salesforce Glyph"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="24" height="24" rx="2" fill="#00A1E0"></rect>
+            <path
+              d="M10.323 6.419a3.637 3.637 0 0 1 2.536-1.011c1.32 0 2.472.683 3.085 1.698a4.543 4.543 0 0 1 1.744-.344C20.07 6.762 22 8.57 22 10.8c0 2.231-1.93 4.04-4.312 4.04-.285 0-.57-.027-.849-.08-.54.896-1.57 1.5-2.751 1.5-.494 0-.962-.106-1.379-.295C12.162 17.161 10.886 18 9.4 18c-1.549 0-2.868-.91-3.375-2.186a3.54 3.54 0 0 1-.686.067C3.495 15.88 2 14.479 2 12.749c0-1.16.672-2.172 1.67-2.713a3.368 3.368 0 0 1-.32-1.433c0-1.99 1.739-3.602 3.884-3.602 1.26 0 2.38.556 3.089 1.418Z"
+              fill="#fff"
+            ></path>
+          </svg>
+        </div>
+        <div class="d-notice__content">
+          Salesforce enabled
+          </h2>
+          <p class="d-notice__message" id="info-alert-desc">
+            You can now view and edit customer Salesforce details in the right
+            bar.
+          </p>
+        </div>
+        <div class="d-notice__actions">
+          <button id="connect-salesforce-btn" class="d-btn d-btn--inverted d-btn--outlined">
+            Connect Salesforce
+          </button>
+        </div>
+        <div class="d-notice__actions">
+          <button
+            class="base-button__button d-btn d-btn--sm d-btn--circle d-btn--icon-only"
+          >
+            <span
+              data-qa="dt-button-icon"
+              class="base-button__icon d-btn__icon d-btn__icon--left"
+            >
+              <svg
+                class="d-icon--size-200 d-icon d-icon--close"
+                data-qa="dt-icon"
+                aria-hidden="true"
+                role="img"
+                data-name="Close"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 12 12"
+              >
+                <path
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  d="M2.646 2.646a.5.5 0 0 1 .708 0L6 5.293l2.646-2.647a.5.5 0 1 1 .708.708L6.707 6l2.647 2.646a.5.5 0 1 1-.708.708L6 6.707 3.354 9.354a.5.5 0 1 1-.708-.708L5.293 6 2.646 3.354a.5.5 0 0 1 0-.708Z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </aside>
+    <!-- End Banner Component -->
+    <!-- Main Application Area -->
+    <div class="d-h100p d-d-flex d-flex-grow-1 d-overflow-hidden">
+      <!-- Left Bar -->
+      <div
+        class="d-w100p d-wmx264 d-p12 d-bgc-secondary d-br d-daw1 d-bc-default d-overflow-y-auto d-flex-shrink-0"
+      >
+        <div class="d-mb8">
+          <div class="d-pt4 d-pb4">
+            <a
+              href="#inbox"
+              class="d-d-flex d-p12 d-bar32 d-bgc-bold d-ai-center d-g8 d-fc-subtle d-td-none d-bar-rad4 h:d-bgc-success-strong"
+            >
+              <div
+                class="d-avatar d-avatar--md d-avatar--color-1000 d-flex-shrink-0"
+              >
+                <svg
+                  class="d-icon--size-300 d-icon d-icon--inbox"
+                  data-qa="dt-icon"
+                  aria-hidden="true"
+                  role="img"
+                  data-name="Inbox"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 12 12"
+                >
+                  <path
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    d="M3.62 1.5h4.76a1.5 1.5 0 0 1 1.342.832l1.725 3.444A.5.5 0 0 1 11.5 6v3a1.5 1.5 0 0 1-1.5 1.5H2A1.5 1.5 0 0 1 .5 9V6a.5.5 0 0 1 .053-.224l1.724-3.443A1.503 1.503 0 0 1 3.62 1.5Zm0 1a.5.5 0 0 0-.447.277v.002L1.81 5.5H4a.5.5 0 0 1 .416.223L5.268 7h1.464l.852-1.277A.5.5 0 0 1 8 5.5h2.19L8.829 2.779v-.002A.5.5 0 0 0 8.38 2.5m2.12 4H8.268l-.852 1.277A.5.5 0 0 1 7 8H5a.5.5 0 0 1-.416-.223L3.732 6.5H1.5V9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5V6.5Z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+              <span class="d-fc-primary d-fw-semibold">Inbox</span>
+            </a>
+            <a
+              href="#page2"
+              class="d-d-flex d-p12 d-bar8 d-ai-center d-g8 d-fc-subtle d-td-none d-bar-rad4 h:d-bgc-moderate"
+              >Page 2</a
+            >
+          </div>
+        </div>
+
+        <details class="d-mb8" open>
+          <summary
+            class="dt-fc-default dt-fw-medium h:dt-bgc-black-100 d-cur-pointer"
+          >
+            Favorites
+          </summary>
+          <div class="d-d-flex d-fd-column">
+            <a
+              href="#fav1"
+              class="d-d-flex d-bar24 d-ai-center d-g8 h:d-fc-default d-px4 d-py4 d-td-none d-bar-rad4 h:d-bgc-moderate"
+            >
+              <div class="d-avatar d-avatar--md d-flex-shrink-0">
+                <div class="d-avatar__canvas">
+                  <img
+                    class="d-avatar__image"
+                    src="https://dialtone.dialpad.com/assets/images/person.png"
+                    alt="avatar user"
+                  />
+                </div>
+                <div class="d-avatar__presence">
+                  <div
+                    class="d-presence d-avatar__presence d-avatar__presence--md"
+                  >
+                    <!---->
+                    <div
+                      class="d-presence__inner d-presence__inner--active"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-d-flex d-fd-column d-g2">
+                <span class="d-fc-primary d-lh-100 d-fw-semibold"
+                  >Nora Kim</span
+                >
+                <span class="d-fs-100 d-fc-tertiary d-lh-100">Available</span>
+              </div>
+            </a>
+            <a
+              href="#fav2"
+              class="d-d-flex d-ai-center d-g8 d-fc-subtle h:d-fc-default d-p4 d-td-none d-bar-rad4 h:d-bgc-moderate"
+            >
+              <div
+                class="d-avatar d-avatar--md d-avatar--color-200 d-flex-shrink-0"
+              >
+                <div class="d-avatar__canvas">
+                  <span class="d-avatar__initials">ZB</span>
+                </div>
+                <div class="d-avatar__presence">
+                  <div
+                    class="d-presence d-avatar__presence d-avatar__presence--md"
+                  >
+                    <!---->
+                    <div
+                      class="d-presence__inner d-presence__inner--away"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-d-flex d-fd-column">
+                <span class="d-fc-primary d-fw-semibold">Zoe Brooks</span>
+                <span class="d-fs-100 d-fc-tertiary">Away</span>
+              </div>
+            </a>
+          </div>
+        </details>
+
+        <details class="d-mb8" open>
+          <summary
+            class="dt-fc-default dt-fw-medium dt-p8 d-bar-rad4 h:dt-bgc-black-100 d-c-pointer"
+          >
+            Departments
+          </summary>
+          <div class="d-pl16 d-pt4 d-pb4">
+            <a
+              href="#dept1"
+              class="d-d-block d-fc-subtle h:dt-fc-default d-p4 d-td-none d-bar-rad4 h:dt-bgc-black-050"
+              >Department Alpha</a
+            >
+            <a
+              href="#dept2"
+              class="d-d-block d-fc-subtle h:dt-fc-default d-p4 d-td-none d-bar-rad4 h:dt-bgc-black-050"
+              >Department Beta</a
+            >
+          </div>
+        </details>
+
+        <details class="d-mb8" open>
+          <summary
+            class="dt-fc-default dt-fw-medium dt-p8 d-bar-rad4 d-c-pointer h:dt-bgc-black-100"
+          >
+            Channels
+          </summary>
+          <div class="d-pl16 d-pt4 d-pb4">
+            <a
+              href="#channel-general"
+              class="d-d-block d-fc-subtle h:d-fc-default d-p4 d-td-none d-bar-rad4 h:dt-bgc-black-050"
+              >#general</a
+            >
+            <a
+              href="#channel-random"
+              class="d-d-block d-fc-subtle h:d-fc-default d-p4 d-td-none d-bar-rad4 h:dt-bgc-black-050"
+              >#random</a
+            >
+          </div>
+        </details>
+
+        <details class="d-mb8" open>
+          <summary
+            class="dt-fc-default dt-fw-medium dt-p8 d-bar-rad4 h:dt-bgc-black-100 d-cur-pointer"
+          >
+            Recent
+          </summary>
+          <div class="d-pl16 d-pt4 d-pb4">
+            <a
+              href="#recent-convo1"
+              class="d-d-block d-fc-subtle h:d-fc-default d-p4 d-td-none d-bar-rad4 h:dt-bgc-black-050"
+              >Recent Conversation 1</a
+            >
+            <a
+              href="#recent-doc1"
+              class="d-d-block d-fc-subtle h:d-fc-default d-p4 d-td-none d-bar-rad4 h:dt-bgc-black-050"
+              >Recent Document 1</a
+            >
+          </div>
+        </details>
+      </div>
+
+      <!-- Content Area -->
+      <div class="d-w100p d-bgc-primary d-flex-grow-1 d-p16 d-overflow-y-auto">
+        <p class="dt-fc-default">Main Content Area</p>
+      </div>
+
+      <!-- Right Bar -->
+
+      <div
+        id="right-sidebar" class="d-w100p d-wmx332 d-bgc-secondary d-bl d-daw1 d-bc-default d-overflow-y-auto d-flex-shrink-0 c-right-bar"
+      >
+        <!-- Optional title -->
+        <div id="right-view-profile" class="right-bar-view">
+          <h5 class="dt-fc-default">Profile View</h5>
+          <p class="dt-fc-subtle">
+            This is where user profile information would go.
+          </p>
+          <!-- Add more profile content here -->
+        </div>
+        <div
+          id="right-view-salesforce"
+          class="right-bar-view d-flex d-fd-column d-g0"
+        >
+          <div
+            id="salesforce-view-header"
+            class="d-d-flex d-ai-center d-px16 d-py12 d-fd-row d-jc-space-between d-bb d-baw1 d-bc-default"
+          >
+            <h5 class="dt-fc-primary d-fs-200">Salesforce</h5>
+            <div id="salesforce-view-header-actions">
+              <button class="d-btn d-btn--icon-only" type="button">
+                <svg
+                  class="d-icon--size-300 d-icon d-icon--more-vertical"
+                  data-qa="dt-icon"
+                  aria-hidden="true"
+                  role="img"
+                  data-name="More Vertical"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 12 12"
+                >
+                  <path
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    d="M5 2.5a1 1 0 1 1 2 0 1 1 0 0 1-2 0ZM5 6a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm0 3.5a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </button>
+              <button class="d-btn d-btn--icon-only d-w32 d-h32" type="button">
+                <span class="d-btn__label"
+                  ><svg
+                    class="d-icon--size-300 d-icon d-icon--close"
+                    data-qa="dt-icon"
+                    aria-hidden="true"
+                    role="img"
+                    data-name="Close"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 12 12"
+                  >
+                    <path
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                      d="M2.646 2.646a.5.5 0 0 1 .708 0L6 5.293l2.646-2.647a.5.5 0 1 1 .708.708L6.707 6l2.647 2.646a.5.5 0 1 1-.708.708L6 6.707 3.354 9.354a.5.5 0 1 1-.708-.708L5.293 6 2.646 3.354a.5.5 0 0 1 0-.708Z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            id="salesforce-view-body"
+            class="d-d-flex d-fd-column d-g24 d-p12"
+          >
+            <div
+              class="d-notice d-notice--success d-notice--important d-d-flex d-g4 d-jc-space-between"
+            >
+              <div aria-hidden="true" class="d-notice__icon">
+                <span class="d-icon__wrapper">
+                  <div
+                    aria-busy="true"
+                    role="status"
+                    aria-label=""
+                    class="d-icon d-icon--size-300"
+                    style="display: block"
+                  >
+                    <svg
+                      class="d-icon--size-300 d-icon d-icon--bell"
+                      data-qa="dt-icon"
+                      aria-hidden="true"
+                      role="img"
+                      data-name="Bell"
+                      viewBox="0 0 12 12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M4.884 10.068a.5.5 0 0 1 .684.181.5.5 0 0 0 .865 0 .5.5 0 0 1 .865.502 1.5 1.5 0 0 1-2.595 0 .5.5 0 0 1 .181-.683ZM6 .5A3.5 3.5 0 0 0 2.5 4c0 1.676-.359 2.717-.689 3.323a2.968 2.968 0 0 1-.44.622 1.51 1.51 0 0 1-.153.142h-.001a.515.515 0 0 0-.16.18.498.498 0 0 0-.033.387A.5.5 0 0 0 1.5 9h9a.5.5 0 0 0 .283-.912l-.001-.001a1.507 1.507 0 0 1-.153-.142 2.97 2.97 0 0 1-.44-.622C9.859 6.717 9.5 5.676 9.5 4A3.5 3.5 0 0 0 6 .5Zm0 1A2.5 2.5 0 0 0 3.5 4c0 1.824-.391 3.033-.811 3.802-.038.07-.076.136-.114.198h6.85a4.705 4.705 0 0 1-.114-.198C8.891 7.032 8.5 5.824 8.5 4A2.5 2.5 0 0 0 6 1.5ZM1.057 8.268Zm9.886 0a.504.504 0 0 0-.161-.181h.001c.07.049.124.111.16.182Z"
+                        fill="white"
+                      ></path>
+                    </svg>
+                  </div>
+                </span>
+              </div>
+              <div class="d-notice--content" role="status">
+                <p class="d-notice--title d-fs-200">Notice title</p>
+                <p class="d-notice--message d-fs-100">
+                  <span>
+                    Message body with
+                    <a href="#" class="d-link d-link--muted">a link</a>.
+                  </span>
+                </p>
+              </div>
+              <div class="d-notice__actions">
+                <button
+                  type="button"
+                  class="base-button__button d-btn d-btn--outlined d-btn--muted d-btn--sm"
+                >
+                  <span class="d-btn__label base-button__label"> Start </span>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Close"
+                  class="base-button__button d-btn d-btn--sm d-btn--circle d-btn--icon-only"
+                >
+                  <span class="base-button__icon d-btn__icon d-btn__icon--left">
+                    <span class="d-icon__wrapper">
+                      <div
+                        aria-busy="true"
+                        role="status"
+                        aria-label=""
+                        class="d-icon d-icon--size-200"
+                        style="display: block"
+                      >
+                        <div
+                          class="d-skeleton-placeholder d-bar-circle d-skeleton-placeholder--animate"
+                          style="
+                            animation-delay: 0ms;
+                            animation-duration: 1000ms;
+                            min-width: 100%;
+                            max-width: 100%;
+                            min-height: 100%;
+                            max-height: 100%;
+                          "
+                        ></div>
+                      </div>
+                    </span>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div
+              class="d-d-flex d-fd-column d-g12 d-h100p d-p12 d-bgc-primary d-ba d-bc-default d-baw1 d-bar8"
+            >
+              <div class="d-d-flex d-fd-row d-jc-space-between">
+                <span class="d-fw-bold d-fs-100">Connected record</span>
+                <a href="#" class="d-link d-td-none d-fs-100 h:d-td-underline"
+                  >Rematch</a
+                >
+              </div>
+              <div class="d-d-flex d-fs-100 d-fd-column d-g8 contact-card-body">
+                <div
+                  class="d-d-flex d-fd-row d-jc-space-between contact-card-item"
+                >
+                  <span class="d-fw-medium d-fc-placeholder">Name</span>
+                  <span class="d-fc-primary">Nora Kim</span>
+                </div>
+                <div
+                  class="d-d-flex d-fd-row d-jc-space-between contact-card-item"
+                >
+                  <span class="d-fw-medium d-fc-placeholder">Company</span>
+                  <span class="d-fc-primary">Aerolabs</span>
+                </div>
+                <div
+                  class="d-d-flex d-fd-row d-jc-space-between contact-card-item"
+                >
+                  <span class="d-fw-medium d-fc-placeholder">Role</span>
+                  <span class="d-fc-primary">Marketing Manager</span>
+                </div>
+                <div
+                  class="d-d-flex d-fd-row d-jc-space-between contact-card-item"
+                >
+                  <span class="d-fw-medium d-fc-placeholder">Phone</span>
+                  <span class="d-fc-primary">+1 (666) 676-0098</span>
+                </div>
+                <div
+                  class="d-d-flex d-fd-row d-jc-space-between contact-card-item"
+                >
+                  <span class="d-fw-medium d-fc-placeholder">Email</span>
+                  <span class="d-fc-primary">nora.kim@aerolabs.com</span>
+                </div>
+              </div>
+              <div
+                class="d-d-flex d-fd-row d-jc-space-between contact-card-footer"
+              >
+                <a href="#" class="d-link d-td-none d-fs-100 h:d-td-underline"
+                  >Show more</a
+                >
+                <a href="#" class="d-link d-td-none d-fs-100 h:d-td-underline"
+                  >Edit</a
+                >
+              </div>
+            </div>
+            <div class="d-d-flex d-fd-column d-g12">
+              <div
+                class="d-d-flex d-fd-row d-jc-space-between d-ai-center d-mb8 d-px12"
+              >
+                <span class="d-fw-bold d-fs-100">Recent activity</span>
+                <a href="#" class="d-link d-td-none d-fs-100 h:d-td-underline"
+                  >View all</a
+                >
+              </div>
+              <div class="d-d-flex d-fd-column">
+                <!-- Activity 1: Call -->
+                <div
+                  class="d-d-flex d-ai-center d-ai-center d-g12 d-p12 d-bgc-moderate d-bar8"
+                >
+                  <svg
+                    class="d-icon--size-200 d-icon d-icon--dp-phone"
+                    data-qa="dt-icon"
+                    aria-hidden="true"
+                    role="img"
+                    data-name="Dp Phone"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 12 12"
+                  >
+                    <path
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                      d="M2.01 2.034a.036.036 0 0 0-.003.016 7.98 7.98 0 0 0 .554 2.508l1.128-.94a.125.125 0 0 0 .041-.127l-.349-1.396A.125.125 0 0 0 3.26 2H2.083a.092.092 0 0 0-.065.023.035.035 0 0 0-.009.011ZM3 5.493l1.33-1.108c.332-.276.476-.718.371-1.136l-.349-1.397A1.125 1.125 0 0 0 3.26 1H2.083c-.577 0-1.106.457-1.074 1.1a9.101 9.101 0 0 0 2.674 5.94c2.217 2.22 4.922 2.773 6.137 2.912.67.077 1.18-.463 1.18-1.077V8.738c0-.516-.352-.966-.853-1.091l-1.439-.359a1.125 1.125 0 0 0-1.068.296L6.394 8.832A8.804 8.804 0 0 1 4.39 7.334 8.226 8.226 0 0 1 3 5.493Zm4.35 3.796a9.892 9.892 0 0 0 2.583.67.05.05 0 0 0 .023-.002.046.046 0 0 0 .017-.01.096.096 0 0 0 .026-.072V8.738a.125.125 0 0 0-.095-.121l-1.439-.359a.125.125 0 0 0-.118.033l-.997.998Z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  <div class="d-d-flex d-fd-column d-fl-grow1 d-g4">
+                    <span class="d-fw-semibold d-fc-primary d-lh-100 d-fs-100"
+                      >Logged a call</span
+                    >
+                  </div>
+                  <span class="d-fs-100 d-fc-tertiary">2h ago</span>
+                </div>
+                <!-- Activity 2: Email -->
+                <div class="d-d-flex d-ai-center d-g8 d-p12 d-bar8">
+                  <div
+                    class="d-avatar d-avatar--md d-bgc-blue-200 d-fc-blue-500 d-d-flex d-ai-center d-jc-center d-flex-shrink-0"
+                  >
+                    <svg
+                      class="d-icon d-icon--size-100 d-icon--email"
+                      data-qa="dt-icon"
+                      aria-hidden="true"
+                      role="img"
+                      data-name="Email"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 12 12"
+                    >
+                      <path
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                        d="M1.5 2h9a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-7A.5.5 0 0 1 1.5 2Zm.528 1 .002.002L6 6.318 9.97 3.002l.001-.002a.5.5 0 0 0-.948-.318l-.024.024L6 5.682 3.002 2.706 2.978 2.684a.5.5 0 0 0-.948.318Z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="d-d-flex d-fd-column d-fl-grow1">
+                    <span class="d-fw-semibold d-fc-primary d-lh-100"
+                      >Email: Follow-up</span
+                    >
+                    <span class="d-fs-100 d-fc-tertiary d-lh-100"
+                      >To Nora Kim</span
+                    >
+                  </div>
+                  <span class="d-fs-100 d-fc-tertiary">Yesterday</span>
+                </div>
+                <!-- Activity 3: Meeting -->
+                <div class="d-d-flex d-ai-center d-g8 d-p12 d-bar8">
+                  <div
+                    class="d-avatar d-avatar--md d-bgc-green-200 d-fc-green-500 d-d-flex d-ai-center d-jc-center d-flex-shrink-0"
+                  >
+                    <svg
+                      class="d-icon d-icon--size-200 d-icon--meetings"
+                      data-qa="dt-icon"
+                      aria-hidden="true"
+                      role="img"
+                      data-name="Meetings"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 12 12"
+                    >
+                      <path
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                        d="M1.5 2h9a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 1.5 10v-1h9V3h-9v1.5H3a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1H3a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0-1H4a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V8h-.5a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5ZM1.5 9v1h-1V9Zm1-1V4.5H2v3a.5.5 0 0 0 .5.5Zm-1.5-5h1V2h-1Z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="d-d-flex d-fd-column d-fl-grow1">
+                    <span class="d-fw-semibold d-fc-primary d-lh-100"
+                      >Meeting</span
+                    >
+                    <span class="d-fs-100 d-fc-tertiary d-lh-100"
+                      >Project sync with Nora</span
+                    >
+                  </div>
+                  <span class="d-fs-100 d-fc-tertiary">Tomorrow</span>
+                </div>
+              </div>
+            </div>
+            <!-- Wrapper for Cases section, matching Recent Activity structure -->
+            <div class="d-d-flex d-fd-column d-g4">
+              <!-- Cases Header -->
+              <div class="d-d-flex d-fd-row d-jc-space-between d-ai-center d-px12">
+                <span class="d-fw-bold d-fs-100">Cases</span>
+            <a href="#" class="d-link d-td-none d-fs-100 h:d-td-underline"
+              >View all</a
+            >
+          </div>
+            
+            <!-- Sample Cases List (Activity Item Style) -->
+            <div class="d-d-flex d-fd-column d-g0">
+              <!-- Case 1 -->
+              <div class="d-d-flex d-ai-center d-g12 d-p12 d-bar8 d-bgc-secondary h:d-bgc-bold d-c-pointer">
+                <div class="d-d-flex d-fd-column d-fl-grow1">
+                  <span class="d-fs-100 d-fw-semibold d-fc-primary d-lh-100">Case #0012345</span>
+                  <span class="d-fs-100 d-fc-tertiary d-lh-100">Customer unable to access account.</span>
+                </div>
+                <span class="d-fs-100 d-fc-tertiary">Open</span>
+              </div>
+
+              <!-- Case 2 -->
+              <div class="d-d-flex d-ai-center d-g12 d-p12 d-bar8 d-bgc-secondary h:d-bgc-bold d-c-pointer">
+                <div class="d-d-flex d-fd-column d-fl-grow1">
+                  <span class="d-fs-100 d-fw-semibold d-fc-primary d-lh-100">Case #0012346</span>
+                  <span class="d-fs-100 d-fc-tertiary d-lh-100">Billing discrepancy reported.</span>
+                </div>
+                <span class="d-fs-100 d-fc-tertiary">Pending</span>
+              </div>
+
+              <!-- Case 3 -->
+              <div class="d-d-flex d-ai-center d-g12 d-p12 d-bar8 d-bgc-secondary h:d-bgc-bold d-c-pointer">
+                <div class="d-d-flex d-fd-column d-fl-grow1">
+                  <span class="d-fs-100 d-fw-semibold d-fc-primary d-lh-100">Case #0012347</span>
+                  <span class="d-fs-100 d-fc-tertiary d-lh-100">Feature request for bulk import.</span>
+                </div>
+                <span class="d-fs-100 d-fc-tertiary">Closed</span>
+              </div>
+
+              <!-- Case 4 -->
+              <div class="d-d-flex d-ai-center d-g12 d-p12 d-bar8 d-bgc-secondary h:d-bgc-bold d-c-pointer">
+                <div class="d-d-flex d-fd-column d-fl-grow1">
+                  <span class="d-fs-100 d-fw-semibold d-fc-primary d-lh-100">Case #0012348</span>
+                  <span class="d-fs-100 d-fc-tertiary d-lh-100">API integration timing out.</span>
+                </div>
+                <span class="d-fs-100 d-fc-tertiary">Open</span>
+              </div>
+
+              <!-- Case 5 -->
+              <div class="d-d-flex d-ai-center d-g12 d-p12 d-bar8 d-bgc-secondary h:d-bgc-bold d-c-pointer">
+                <div class="d-d-flex d-fd-column d-fl-grow1">
+                  <span class="d-fs-100 d-fw-semibold d-fc-primary d-lh-100">Case #0012349</span>
+                  <span class="d-fs-100 d-fc-tertiary d-lh-100">Product documentation update needed.</span>
+                </div>
+                <span class="d-fs-100 d-fc-tertiary">Closed</span>
+              </div>
+            </div>
+            <!-- End Sample Cases List -->
+            </div>
+            <!-- End Wrapper for Cases section -->
+          </div>
+        </div>
+        <div id="right-view-hubspot" class="right-bar-view">
+          <h5 class="d-fc-default">Hubspot View</h5>
+          <p class="d-fc-subtle">
+            This is where Hubspot integration details would appear.
+          </p>
+          <!-- Add more Hubspot content here -->
+        </div>
+        <!-- You could add a default visible view here if needed -->
+        <!-- <div id="right-view-default" class="right-bar-view" style="display: block;">
+                <p class="dt-fc-default">Welcome to the Right Bar!</p>
+            </div> -->
+      </div>
+
+      <!-- Skinny Bar -->
+      <div
+        id="skinny-bar" class="d-h-auto d-w100p d-wmx64 d-bgc-secondary d-bl d-daw1 d-bc-default d-p8 d-flex-shrink-0 d-d-flex d-fd-column d-ai-center d-g8"
+      >
+        <a
+          href="#right-view-profile"
+          class="skinny-bar-item d-btn d-btn--muted d-w48 d-h48" draggable="true"
+          title="Profile"
+        >
+          <span class="d-btn__label"> <svg class="d-icon--size-400 d-icon d-icon--user" data-qa="dt-icon" aria-hidden="true" role="img" data-name="User" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"> <path fill="currentColor" fill-rule="evenodd" d="M6 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM3.5 3.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Zm-.768 4.232A2.5 2.5 0 0 1 4.5 7h3A2.5 2.5 0 0 1 10 9.5v1a.5.5 0 0 1-1 0v-1A1.5 1.5 0 0 0 7.5 8h-3A1.5 1.5 0 0 0 3 9.5v1a.5.5 0 0 1-1 0v-1a2.5 2.5 0 0 1 .732-1.768Z" clip-rule="evenodd"> </path></svg> </span>
+          <!-- Short label for skinny bar -->
+        </a>
+        <a
+          href="#right-view-salesforce"
+          class="skinny-bar-item d-btn d-btn--muted d-w48 d-h48" draggable="true"
+          title="Salesforce"
+        >
+          <span class="d-btn__label">
+            <svg
+              class="d-icon--size-400 d-icon d-icon--salesforce-glyph"
+              data-qa="dt-icon"
+              aria-hidden="true"
+              role="img"
+              data-name="Salesforce Glyph"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="24" height="24" rx="2" fill="#00A1E0"></rect>
+              <path
+                d="M10.323 6.419a3.637 3.637 0 0 1 2.536-1.011c1.32 0 2.472.683 3.085 1.698a4.543 4.543 0 0 1 1.744-.344C20.07 6.762 22 8.57 22 10.8c0 2.231-1.93 4.04-4.312 4.04-.285 0-.57-.027-.849-.08-.54.896-1.57 1.5-2.751 1.5-.494 0-.962-.106-1.379-.295C12.162 17.161 10.886 18 9.4 18c-1.549 0-2.868-.91-3.375-2.186a3.54 3.54 0 0 1-.686.067C3.495 15.88 2 14.479 2 12.749c0-1.16.672-2.172 1.67-2.713a3.368 3.368 0 0 1-.32-1.433c0-1.99 1.739-3.602 3.884-3.602 1.26 0 2.38.556 3.089 1.418Z"
+                fill="#fff"
+              ></path>
+            </svg>
+          </span>
+          <!-- Short label for skinny bar -->
+        </a>
+        <a
+          href="#right-view-hubspot"
+          class="skinny-bar-item d-btn d-btn--muted d-w48 d-h48" draggable="true"
+          title="Hubspot"
+        >
+          <span class="d-btn__label">
+            <svg
+              class="d-icon--size-400 d-icon d-icon--hubspot"
+              data-qa="dt-icon"
+              aria-hidden="true"
+              role="img"
+              data-name="Hubspot"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="2"
+                y="2"
+                width="20"
+                height="20"
+                rx="2"
+                fill="#E77C39"
+              ></rect>
+              <path
+                d="M6.6 4a1.6 1.6 0 1 0 .853 2.951l4.79 3.61a3.821 3.821 0 0 0-.843 2.399c0 .993.38 1.895.999 2.576l-1.949 1.949a1.28 1.28 0 1 0 .905.905l2.054-2.054h.001a3.84 3.84 0 0 0 5.67-3.376 3.838 3.838 0 0 0-3.2-3.783v-2.15a1.28 1.28 0 1 0-1.418-2.122 1.28 1.28 0 0 0 .138 2.122v2.15a3.812 3.812 0 0 0-1.376.52L8.172 5.891A1.6 1.6 0 0 0 6.6 4Zm8.64 7.04c1.059 0 1.92.861 1.92 1.92s-.861 1.92-1.92 1.92a1.922 1.922 0 0 1-1.92-1.92c0-1.059.861-1.92 1.92-1.92Z"
+                fill="#fff"
+              ></path>
+            </svg>
+          </span>
+          <!-- Short label for skinny bar -->
+        </a>
+        <button id="skinny-bar-add-btn" class="skinny-bar-item d-btn d-btn--muted d-btn--icon-only d-w48 d-h48" type="button" draggable="true">
+          <span class="d-btn__label"> <svg class="d-icon--size-400 d-icon d-icon--plus" data-qa="dt-icon" aria-hidden="true" role="img" data-name="Plus" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><path d="M6 2a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 1 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 6 2Z" fill="currentColor"> </path> </svg> </span>
+        </button>
+        <button id="skinny-bar-settings-btn" class="skinny-bar-item d-btn d-btn--muted d-btn--icon-only d-w48 d-h48" type="button" draggable="true">
+          <span class="d-btn__label"> <svg class="d-icon--size-400 d-icon d-icon--settings" data-qa="dt-icon" aria-hidden="true" role="img" data-name="Settings" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"> <g clip-path="url(#dt-icon382a)" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M6 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM5 6a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"></path><path d="M4.83.94A1.5 1.5 0 0 1 5.89.5h.22A1.5 1.5 0 0 1 7.61 2v.093a.5.5 0 0 0 .25.429h.001l.215.125a.5.5 0 0 0 .522-.012l.06-.033a1.5 1.5 0 0 1 2.04.552l.11.19a1.502 1.502 0 0 1-.544 2.047l-.072.043-.011.006a.5.5 0 0 0-.246.433v.254a.5.5 0 0 0 .244.431l.066.036.016.008a1.5 1.5 0 0 1 .548 2.046l-.111.198a1.5 1.5 0 0 1-2.04.552l-.064-.035a.5.5 0 0 0-.518-.01l-.216.125a.5.5 0 0 0-.25.429V10a1.5 1.5 0 0 1-1.5 1.5h-.22a1.5 1.5 0 0 1-1.5-1.5v-.09a.5.5 0 0 0-.25-.432h-.001l-.215-.125a.5.5 0 0 0-.52.011l-.062.034a1.5 1.5 0 0 1-2.04-.552l-.11-.19a1.502 1.502 0 0 1 .544-2.047l.072-.043.011-.007a.5.5 0 0 0 .246-.432v-.255a.5.5 0 0 0-.25-.429.506.506 0 0 1-.034-.021l-.057-.038a1.5 1.5 0 0 1-.532-2.039l.11-.19a1.5 1.5 0 0 1 2.04-.553l.068.037a.5.5 0 0 0 .514.009l.216-.126a.5.5 0 0 0 .25-.433V2c0-.398.158-.78.44-1.06Zm4.105 4.934v.252a1.5 1.5 0 0 0 .77 1.313l.06.032a.5.5 0 0 1 .177.68l-.11.195a.5.5 0 0 1-.682.18l-.015-.007-.068-.037a1.5 1.5 0 0 0-1.492.005l-.216.125A1.5 1.5 0 0 0 6.61 9.91V10a.5.5 0 0 1-.5.5h-.22a.5.5 0 0 1-.5-.5v-.09a1.5 1.5 0 0 0-.75-1.298l-.214-.124-.001-.001a1.5 1.5 0 0 0-1.49-.005l-.07.037-.015.008a.5.5 0 0 1-.682-.183l-.11-.19a.5.5 0 0 1 .183-.681l.075-.046a1.5 1.5 0 0 0 .749-1.303v-.257a1.5 1.5 0 0 0-.734-1.28l-.064-.043a.5.5 0 0 1-.21-.7l.11-.189a.5.5 0 0 1 .683-.182l.015.008.067.036a1.5 1.5 0 0 0 1.493-.004l.216-.125a1.5 1.5 0 0 0 .749-1.295V2a.5.5 0 0 1 .5-.5h.22a.5.5 0 0 1 .5.5v.09a1.5 1.5 0 0 0 .75 1.298l.214.124.001.001a1.5 1.5 0 0 0 1.49.006l.07-.038.015-.008a.5.5 0 0 1 .682.183l.11.19a.5.5 0 0 1-.183.681l-.076.046a1.5 1.5 0 0 0-.548.549v.002a1.5 1.5 0 0 0-.2.75Z"></path></g><defs><clipPath id="dt-icon382a"><path fill="#fff" d="M0 0h12v12H0z"> </path> </clipPath> </defs> </svg> </span>
+        </button>
+        <button id="skinny-bar-gmail-btn" class="skinny-bar-item d-btn d-btn--muted d-btn--icon-only d-w48 d-h48" type="button" draggable="true"><svg class="d-icon--size-400 d-icon d-icon--gmail" data-qa="dt-icon" aria-hidden="true" role="img" data-name="Gmail" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.545 20.004v-7.727L4.15 10.084 2 8.867v9.773c0 .755.611 1.364 1.364 1.364h3.181z" fill="#4285F4"></path><path d="M17.454 20.004h3.182c.755 0 1.364-.612 1.364-1.364V8.868l-2.434 1.393-2.111 2.016v7.727z" fill="#34A853"></path><path d="m6.545 12.277-.326-3.02.326-2.89L12 10.458l5.454-4.09.365 2.733-.364 3.176L12 16.367l-5.455-4.09z" fill="#EA4335"></path><path d="M17.454 6.367v5.91L22 8.867V7.05c0-1.686-1.925-2.647-3.273-1.636l-1.273.954z" fill="#FBBC04"></path><path d="m2 8.867 2.09 1.568 2.455 1.841V6.368l-1.272-.954C3.923 4.4 2 5.363 2 7.049v1.818z" fill="#C5221F"></path></svg></button>
+        
+        <!-- Skinny Bar Settings Menu (Popover) -->
+        <div id="skinny-bar-settings-menu" class="d-popover d-card d-bs-strong d-wmn200" role="menu" aria-labelledby="skinny-bar-settings-btn" style="display: none; position: absolute; z-index: 10000;">
+          <div class="d-popover__content">
+            <div class="d-p8 d-bar-rad8">
+              <h5 class="d-m0 d-px16 d-py8 d-fw-semibold d-fc-secondary">Visible Items</h5>
+              <div id="skinny-bar-menu-item-toggles" class="d-d-flex d-fd-column d-g8">
+                <!-- Toggles will be populated by JavaScript -->
+                <!-- Example Item:
+                <label class="d-px16 d-py8 d-checkbox d-w100p d-cur-pointer h:d-bgc-unset h:d-bgc-purple-100">
+                  <input type="checkbox" data-item-id="#right-view-profile" class="d-checkbox__input">
+                  <span class="d-checkbox__label">Profile</span>
+                </label>
+                -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Skinny Bar Settings Menu -->
+      </div>
+    </div>
+    <script src="js/view-controller.js" defer></script>
+  </body>
+</html>
