@@ -1,532 +1,384 @@
-const inboxContent = document.getElementById('inbox-content');
-const noraKimContent = document.getElementById('nora-kim-content');
-const zoeBrooksContent = document.getElementById('zoe-brooks-content');
+let isSalesforceLoggedIn = false;
+let currentMainView = 'inbox'; // Initialize with default view
+const visibilityStorageKey = 'skinnyBarItemVisibility';
+const orderStorageKey = 'skinnyBarItemOrder';
+// const nonToggleableItemIdsInSettingsMenu removed.
+
 const rightSidebar = document.getElementById('right-sidebar');
 const skinnyBar = document.getElementById('skinny-bar');
+let currentRightSidebarViewId = null;
+let activeSkinnyBarButtonId = null;
 
-const navInbox = document.querySelector('a[href="#inbox"]');
-const navNoraKim = document.querySelector('a[href="#fav1"]');
-const navZoeBrooks = document.querySelector('a[href="#fav2"]');
+const rightSidebarViews = Array.from(document.querySelectorAll('.right-bar-view')).filter(v => v);
 
-function showView(viewName) {
-  // Clear active state from all main nav links first
-  [navInbox, navNoraKim, navZoeBrooks].forEach(link => {
-    if (link) link.classList.remove('d-bgc-bold');
-  });
-  // Hide all content sections first
-  if (inboxContent) inboxContent.style.display = 'none';
-  if (noraKimContent) noraKimContent.style.display = 'none';
-  if (zoeBrooksContent) zoeBrooksContent.style.display = 'none';
+// --- Main View Switching (Inbox, Nora Kim, Zoe Brooks) ---
+function showMainView(viewName) {
+  console.log(`[showMainView CALLED] viewName: ${viewName}`);
+  currentMainView = viewName; // Update currentMainView state
+  document.querySelectorAll('#inbox-content, #nora-kim-content, #zoe-brooks-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('a[href="#inbox"], a[href="#fav1"], a[href="#fav2"]').forEach(link => link.classList.remove('d-bgc-bold'));
 
-  // Show/hide sidebar and skinny bar
+  let contentToShowId;
+  let navLinkToBoldId;
+  let viewIdToLoadForSidebar = null;
+
   if (viewName === 'inbox') {
-    if (inboxContent) inboxContent.style.display = 'block';
-          if (navInbox) navInbox.classList.add('d-bgc-bold');
+    contentToShowId = 'inbox-content';
+    navLinkToBoldId = 'a[href="#inbox"]';
     if (rightSidebar) rightSidebar.classList.add('hidden');
     if (skinnyBar) skinnyBar.classList.add('hidden');
+    currentRightSidebarViewId = null;
+    activeSkinnyBarButtonId = null;
   } else if (viewName === 'noraKim') {
-    if (noraKimContent) noraKimContent.style.display = 'block';
-          if (navNoraKim) navNoraKim.classList.add('d-bgc-bold');
+    contentToShowId = 'nora-kim-content';
+    navLinkToBoldId = 'a[href="#fav1"]';
+    viewIdToLoadForSidebar = 'right-view-salesforce';
     if (rightSidebar) rightSidebar.classList.remove('hidden');
     if (skinnyBar) skinnyBar.classList.remove('hidden');
   } else if (viewName === 'zoeBrooks') {
-    if (zoeBrooksContent) zoeBrooksContent.style.display = 'block';
-          if (navZoeBrooks) navZoeBrooks.classList.add('d-bgc-bold');
+    contentToShowId = 'zoe-brooks-content';
+    navLinkToBoldId = 'a[href="#fav2"]';
+    viewIdToLoadForSidebar = 'right-view-salesforce';
     if (rightSidebar) rightSidebar.classList.remove('hidden');
     if (skinnyBar) skinnyBar.classList.remove('hidden');
+  } else {
+    // Fallback for unknown viewName - explicitly set to empty string
+    contentToShowId = ''; 
+    navLinkToBoldId = '';
+    console.warn(`[showMainView] Unknown viewName: '${viewName}'. Defaulting to no content shown.`);
+  }
+
+  console.log(`[showMainView Debug] Attempting to use ID: '${contentToShowId}' for viewName: '${viewName}'`);
+  const contentToShow = contentToShowId ? document.getElementById(contentToShowId) : null;
+  const navLinkToBold = navLinkToBoldId ? document.querySelector(navLinkToBoldId) : null;
+
+  if (contentToShow) {
+    contentToShow.style.display = 'block';
+    console.log(`[showMainView for ${viewName}] Set ${contentToShow.id}.style.display to 'block'. Actual: ${contentToShow.style.display}`);
+  } else {
+    // This block is reached if contentToShowId was valid but getElementById failed, OR if contentToShowId was empty.
+    console.error("[showMainView for " + viewName + "] FAILED to find/display main content DIV. ID used was: '" + contentToShowId + "'. This means either the ID is incorrect, the element is missing from index.html, or viewName was unexpected.");
+  }
+  if (navLinkToBold) navLinkToBold.classList.add('d-bgc-bold');
+
+  if (viewIdToLoadForSidebar) {
+    let firstVisibleAppButton = skinnyBar.querySelector('button.skinny-bar-item[data-view-id]:not([style*="display: none"])');
+    let viewIdToLoad = null;
+    let buttonIdToActivate = null;
+
+    if (firstVisibleAppButton) {
+        viewIdToLoad = firstVisibleAppButton.dataset.viewId;
+        buttonIdToActivate = firstVisibleAppButton.id;
+    } else { // Fallback if all app buttons are hidden
+        const profileBtn = document.getElementById('skinny-bar-profile-btn');
+        if (profileBtn && profileBtn.dataset.viewId && profileBtn.style.display !== 'none') {
+            viewIdToLoad = profileBtn.dataset.viewId;
+            buttonIdToActivate = profileBtn.id;
+        }
+    }
+    
+    updateActiveSkinnyButtonState(buttonIdToActivate);
+    const salesforceContext = (viewName === 'zoeBrooks') ? 'no-contact-matched' : 'contact-matched';
+    showRightSidebarViewContent(viewIdToLoad, salesforceContext);
+  }
+
+  // The redundant block that was here has been removed.
+}
+
+document.querySelector('a[href="#inbox"]')?.addEventListener('click', (e) => { e.preventDefault(); showMainView('inbox'); });
+document.querySelector('a[href="#fav1"]')?.addEventListener('click', (e) => { e.preventDefault(); showMainView('noraKim'); });
+document.querySelector('a[href="#fav2"]')?.addEventListener('click', (e) => { e.preventDefault(); showMainView('zoeBrooks'); });
+
+
+// --- Right Sidebar View Content Management ---
+async function loadSalesforcePage(initialContextForSF) { // Renamed argument
+  const salesforceViewContainer = document.getElementById('right-view-salesforce');
+  if (!salesforceViewContainer) return console.error('SF container not found.');
+  const salesforcePageContentDiv = salesforceViewContainer.querySelector('#salesforce-view-body');
+  if (!salesforcePageContentDiv) return console.error('SF body not found.');
+
+  let actualPageToLoad = initialContextForSF; // Use renamed argument
+  if (!isSalesforceLoggedIn) {
+    if (initialContextForSF === 'contact-matched') { // Use renamed argument
+      actualPageToLoad = 'salesforce-login-nora';
+    } else if (initialContextForSF === 'no-contact-matched') { // Use renamed argument
+      actualPageToLoad = 'salesforce-login-zoe';
+    } else {
+      actualPageToLoad = 'salesforce-login-nora'; // Default fallback
+    }
+  }
+  // Note: If isSalesforceLoggedIn is true, actualPageToLoad remains the initially passed pageName.
+
+  salesforcePageContentDiv.innerHTML = '<p>Loading...</p>'; // Indicate loading
+  try {
+    const response = await fetch(`sidebar-apps/salesforce/${actualPageToLoad}.html`);
+    if (!response.ok) throw new Error(`Failed to load ${actualPageToLoad}: ${response.statusText}`);
+    salesforcePageContentDiv.innerHTML = await response.text();
+  } catch (error) {
+    console.error('Error loading Salesforce page:', error);
+    salesforcePageContentDiv.innerHTML = '<p>Error loading content.</p>';
   }
 }
 
-if (navInbox) {
-  navInbox.addEventListener('click', function(event) {
-    event.preventDefault();
-    showView('inbox');
-  });
-}
+function showRightSidebarViewContent(viewIdToShow, salesforceContextSubPage = null) {
+  if (!viewIdToShow) {
+    if (rightSidebar) rightSidebar.classList.add('hidden');
+    currentRightSidebarViewId = null;
+    return;
+  }
 
-if (navNoraKim) {
-  navNoraKim.addEventListener('click', function(event) {
-    event.preventDefault();
-    showView('noraKim');
-  });
-}
-
-if (navZoeBrooks) {
-  navZoeBrooks.addEventListener('click', function(event) {
-    event.preventDefault();
-    showView('zoeBrooks');
-  });
-}
-
-// Right sidebar elements
-const rightViewProfile = document.getElementById('right-view-profile');
-const rightViewSalesforce = document.getElementById('right-view-salesforce');
-const rightViewHubspot = document.getElementById('right-view-hubspot');
-const rightSidebarViews = [rightViewProfile, rightViewSalesforce, rightViewHubspot];
-
-// Skinny bar links
-const skinnyLinkProfile = document.querySelector('a[href="#right-view-profile"]');
-const skinnyLinkSalesforce = document.querySelector('a[href="#right-view-salesforce"]');
-const skinnyLinkHubspot = document.querySelector('a[href="#right-view-hubspot"]');
-const skinnyBarLinks = [skinnyLinkProfile, skinnyLinkSalesforce, skinnyLinkHubspot];
-
-// Connect Salesforce button
-const connectSalesforceBtn = document.getElementById('connect-salesforce-btn');
-
-function showRightSidebarView(viewIdToShow) {
+  if (rightSidebar) rightSidebar.classList.remove('hidden');
   rightSidebarViews.forEach(view => {
-    if (view) {
-      if (view.id === viewIdToShow) {
-        view.style.display = 'block';
-      } else {
-        view.style.display = 'none';
-      }
-    }
+    if (view) view.style.display = (view.id === viewIdToShow) ? 'block' : 'none';
   });
 
-  skinnyBarLinks.forEach(link => {
-    if (link) {
-      if (link.getAttribute('href') === '#' + viewIdToShow) {
-        link.classList.add('d-btn--active'); // Assuming Dialtone's active class or a custom one
-      } else {
-        link.classList.remove('d-btn--active');
-      }
-    }
-  });
+  if (viewIdToShow === 'right-view-salesforce') {
+    loadSalesforcePage(salesforceContextSubPage);
+  }
+  currentRightSidebarViewId = viewIdToShow;
 }
 
-skinnyBarLinks.forEach(link => {
-  if (link) {
-    link.addEventListener('click', function(event) {
-      event.preventDefault();
-      const targetViewId = link.getAttribute('href').substring(1);
-      showRightSidebarView(targetViewId);
+function updateActiveSkinnyButtonState(buttonIdToActivate) {
+  activeSkinnyBarButtonId = buttonIdToActivate;
+  if (skinnyBar) {
+    skinnyBar.querySelectorAll('button.skinny-bar-item[data-view-id]').forEach(btn => {
+      btn.classList.toggle('d-btn--active', btn.id === activeSkinnyBarButtonId);
     });
   }
-});
+}
 
-if (connectSalesforceBtn) {
-  connectSalesforceBtn.addEventListener('click', function(event) {
+// --- Drag and Drop ---
+let draggedButton = null;
+let placeholder = null;
+
+function createPlaceholder() {
+  if (!placeholder) {
+    placeholder = document.createElement('div');
+    placeholder.classList.add('skinny-bar-placeholder');
+  }
+  return placeholder;
+}
+
+function onDragStart(event) {
+  const targetButton = event.target.closest('button.skinny-bar-item');
+  if (!targetButton || !targetButton.draggable) {
     event.preventDefault();
-    showView('noraKim'); // Switch main content to Nora Kim
-    showRightSidebarView('right-view-salesforce'); // Show Salesforce in right sidebar
-  });
+    return;
+  }
+  draggedButton = targetButton;
+  event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', draggedButton.id); // Necessary for Firefox
+  setTimeout(() => { if(draggedButton) draggedButton.classList.add('dragging'); }, 0);
+  console.log('[D&D] Drag Start:', draggedButton.id);
 }
 
-// Drag and Drop for Skinny Bar
-const skinnyBarContainer = document.getElementById('skinny-bar');
-const draggableSkinnyBarItems = document.querySelectorAll('.skinny-bar-item');
-let draggedItem = null;
-let skinnyBarPlaceholder = null;
-
-function createSkinnyBarPlaceholder() {
-  if (!skinnyBarPlaceholder) {
-    skinnyBarPlaceholder = document.createElement('div');
-    skinnyBarPlaceholder.classList.add('skinny-bar-placeholder');
-    // The placeholder is not added to the DOM here, only when needed.
+function onDragEnd(event) {
+  if (!draggedButton) return;
+  console.log('[D&D] Drag End:', draggedButton.id);
+  draggedButton.classList.remove('dragging');
+  if (placeholder && placeholder.parentNode) {
+    placeholder.parentNode.removeChild(placeholder);
   }
+  draggedButton = null;
 }
 
-createSkinnyBarPlaceholder(); // Create it once on script load
-
-draggableSkinnyBarItems.forEach(item => {
-  item.addEventListener('dragstart', (event) => {
-    draggedItem = item;
-    setTimeout(() => {
-      item.classList.add('dragging');
-    }, 0); // Timeout to allow the browser to render the drag image before hiding
-    // To allow dropping on other elements, you might need:
-    // event.dataTransfer.setData('text/plain', item.id); // if items have IDs
-    // Ensure placeholder is not in DOM when drag starts from an item
-    if (skinnyBarPlaceholder && skinnyBarPlaceholder.parentNode) {
-      skinnyBarPlaceholder.parentNode.removeChild(skinnyBarPlaceholder);
-    }
-  });
-
-  item.addEventListener('dragend', () => {
-    // Final cleanup for placeholder
-    if (skinnyBarPlaceholder && skinnyBarPlaceholder.parentNode) {
-      skinnyBarPlaceholder.parentNode.removeChild(skinnyBarPlaceholder);
-    }
-    if (draggedItem) {
-      draggedItem.classList.remove('dragging');
-      draggedItem = null;
-    }
-  });
-});
-
-skinnyBarContainer.addEventListener('dragenter', (event) => {
-  // Optional: Add class to container for styling when item enters
-  // event.preventDefault(); // Important if you want to allow drop
-  // skinnyBarContainer.classList.add('drag-over');
-});
-
-skinnyBarContainer.addEventListener('dragleave', (event) => {
-  // Check if the leave is to an outside element, not a child
-  if (!skinnyBarContainer.contains(event.relatedTarget) && skinnyBarPlaceholder.parentNode) {
-    skinnyBarPlaceholder.parentNode.removeChild(skinnyBarPlaceholder);
-  }
-  // skinnyBarContainer.classList.remove('drag-over');
-});
-
-skinnyBarContainer.addEventListener('dragover', (event) => {
-  event.preventDefault(); // Necessary to allow dropping
-  const afterElement = getDragAfterElement(skinnyBarContainer, event.clientY);
-  if (afterElement == null) {
-    skinnyBarContainer.appendChild(skinnyBarPlaceholder);
+function onDragOver(event) {
+  event.preventDefault(); // Allow drop
+  if (!draggedButton) return;
+  const currentPlaceholder = createPlaceholder();
+  const afterElement = getDragAfterElement(skinnyBar, event.clientY);
+  if (afterElement) {
+    skinnyBar.insertBefore(currentPlaceholder, afterElement);
   } else {
-    skinnyBarContainer.insertBefore(skinnyBarPlaceholder, afterElement);
+    skinnyBar.appendChild(currentPlaceholder);
   }
-});
+}
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('button.skinny-bar-item:not(.dragging):not(.skinny-bar-placeholder)')];
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
-function getSkinnyItemId(item) {
-  if (!item) return null; // Guard against null items
-  if (item.tagName === 'A' && item.getAttribute('href')) {
-    return item.getAttribute('href'); // e.g., '#right-view-profile'
-  } else if (item.id) {
-    return '#' + item.id; // e.g., '#skinny-bar-more-btn' (prefix with # for consistency if desired)
+
+function onDrop(event) {
+  event.preventDefault();
+  if (!draggedButton || !placeholder || !placeholder.parentNode) {
+    console.log('[D&D] Drop aborted: no draggedButton or placeholder invalid.');
+    return;
   }
-  console.warn('Skinny bar item has no identifiable href or id:', item);
-  return null; // Should not happen if HTML is set up correctly
+  console.log('[D&D] Drop:', draggedButton.id);
+  skinnyBar.insertBefore(draggedButton, placeholder);
+  saveSkinnyBarOrder();
 }
 
 function saveSkinnyBarOrder() {
-  const orderedItemIds = [];
-  skinnyBarContainer.querySelectorAll('.skinny-bar-item').forEach(item => {
-    const id = getSkinnyItemId(item);
-    if (id) orderedItemIds.push(id);
-  });
-  localStorage.setItem('skinnyBarOrder', JSON.stringify(orderedItemIds));
-  console.log('Skinny bar order saved:', orderedItemIds);
+  if (!skinnyBar) return;
+  const orderedItemIds = Array.from(skinnyBar.querySelectorAll('button.skinny-bar-item'))
+                              .map(btn => btn.id)
+                              .filter(id => id);
+  localStorage.setItem(orderStorageKey, JSON.stringify(orderedItemIds));
+  console.log('[D&D] Order Saved:', orderedItemIds);
 }
 
 function loadAndApplySkinnyBarOrder() {
-  const savedOrder = localStorage.getItem('skinnyBarOrder');
-  console.log('Loading skinny bar order:', savedOrder);
+  if (!skinnyBar) return;
+  const savedOrder = localStorage.getItem(orderStorageKey);
+  // console.log('[D&D] Loading Order:', savedOrder);
   if (savedOrder) {
     try {
       const orderedItemIds = JSON.parse(savedOrder);
-      if (!Array.isArray(orderedItemIds)) {
-        console.error('Saved skinny bar order is not an array.');
-        localStorage.removeItem('skinnyBarOrder'); // Clear invalid data
-        return;
-      }
+      if (!Array.isArray(orderedItemIds)) throw new Error('Saved order is not an array');
+      
       const itemsMap = new Map();
-      // Create a map of items by their ID for easy lookup
-      skinnyBarContainer.querySelectorAll('.skinny-bar-item').forEach(item => {
-        const id = getSkinnyItemId(item);
-        if (id) itemsMap.set(id, item);
+      skinnyBar.querySelectorAll('button.skinny-bar-item').forEach(btn => {
+        if (btn.id) itemsMap.set(btn.id, btn);
       });
 
-      // Detach all items first to avoid issues with reordering existing children
       const fragment = document.createDocumentFragment();
       orderedItemIds.forEach(id => {
         const itemToAppend = itemsMap.get(id);
         if (itemToAppend) {
-          fragment.appendChild(itemToAppend); // Add to fragment in order
+          fragment.appendChild(itemToAppend);
+          itemsMap.delete(id);
+        } else {
+          console.warn(`[D&D] Item ID "${id}" from saved order not found in DOM.`);
         }
       });
-      skinnyBarContainer.innerHTML = ''; // Clear current items
-      skinnyBarContainer.appendChild(fragment); // Append all in new order
-      console.log('Skinny bar order applied.');
+      itemsMap.forEach(item => { // Append any new items not in saved order
+          fragment.appendChild(item);
+      });
+
+      skinnyBar.innerHTML = ''; // Clear existing items
+      skinnyBar.appendChild(fragment);
+      // console.log('[D&D] Order Applied.');
     } catch (e) {
-      console.error('Error parsing or applying saved skinny bar order:', e);
-      localStorage.removeItem('skinnyBarOrder'); // Clear invalid data
+      console.error('[D&D] Error parsing/applying order:', e);
+      localStorage.removeItem(orderStorageKey);
     }
   }
 }
 
-
-function saveSkinnyBarOrder() {
-  const orderedItemIds = [];
-  skinnyBarContainer.querySelectorAll('.skinny-bar-item').forEach(item => {
-    const id = getSkinnyItemId(item);
-    if (id) orderedItemIds.push(id);
-  });
-  localStorage.setItem('skinnyBarOrder', JSON.stringify(orderedItemIds));
+function manageDragListeners(buttonElement, add) {
+    if (!buttonElement) return;
+    const alreadyHasListeners = buttonElement.getAttribute('data-drag-listeners-added') === 'true';
+    if (add && buttonElement.draggable && !alreadyHasListeners) {
+        buttonElement.addEventListener('dragstart', onDragStart);
+        buttonElement.addEventListener('dragend', onDragEnd);
+        buttonElement.setAttribute('data-drag-listeners-added', 'true');
+        // console.log('[D&D] Added listeners to', buttonElement.id);
+    } else if (!add && alreadyHasListeners) {
+        buttonElement.removeEventListener('dragstart', onDragStart);
+        buttonElement.removeEventListener('dragend', onDragEnd);
+        buttonElement.removeAttribute('data-drag-listeners-added');
+        // console.log('[D&D] Removed listeners from', buttonElement.id);
+    }
 }
 
-function loadAndApplySkinnyBarOrder() {
-  const savedOrder = localStorage.getItem('skinnyBarOrder');
-  if (savedOrder) {
-    try {
-      const orderedItemIds = JSON.parse(savedOrder);
-      const itemsMap = new Map();
-      // Create a map of items by their ID for easy lookup
-      skinnyBarContainer.querySelectorAll('.skinny-bar-item').forEach(item => {
-        const id = getSkinnyItemId(item);
-        if (id) itemsMap.set(id, item);
-      });
 
-      // Re-append items in the saved order
-      orderedItemIds.forEach(id => {
-        const itemToAppend = itemsMap.get(id);
-        if (itemToAppend) {
-          skinnyBarContainer.appendChild(itemToAppend);
+// Settings menu DOM element consts (settingsBtnElement, settingsMenuElement, menuTogglesContainer) removed.
+
+// getPersistedVisibilityStates and saveItemVisibilityState functions removed.
+
+// populateSettingsMenu function removed.
+
+// toggleSettingsMenu function and call count variable removed.
+
+// --- Initialization ---
+document.addEventListener('DOMContentLoaded', function () {
+  // Event delegation for skinny bar button clicks
+  if (skinnyBar) {
+    skinnyBar.addEventListener('click', function(event) {
+      const noraStyle = document.getElementById('nora-kim-content')?.style.display;
+      const zoeStyle = document.getElementById('zoe-brooks-content')?.style.display;
+      console.log(`[SkinnyBar Click - Entry] Nora style: ${noraStyle}, Zoe style: ${zoeStyle}`);
+        const clickedButton = event.target.closest('button.skinny-bar-item');
+        if (!clickedButton) return;
+
+        const buttonId = clickedButton.id;
+        const viewId = clickedButton.dataset.viewId;
+
+        if (buttonId === 'skinny-bar-add-btn') {
+            console.log('[Event Delegated] Add clicked');
+        } else if (buttonId === 'skinny-bar-gmail-btn') {
+            console.log('[Event Delegated] Gmail clicked');
+        } else if (viewId) { // Handles all app buttons with a data-view-id, including skinny-bar-salesforce-btn
+            // Assumed original logic for skinny bar app buttons
+            if (!rightSidebar.classList.contains('hidden') && currentRightSidebarViewId === viewId && activeSkinnyBarButtonId === buttonId) {
+                console.log(`[SkinnyBar SF Click - Close Logic] Closing sidebar. currentRightSidebarViewId: ${currentRightSidebarViewId}, activeSkinnyBarButtonId: ${activeSkinnyBarButtonId}`);
+                rightSidebar.classList.add('hidden');
+                currentRightSidebarViewId = null;
+                updateActiveSkinnyButtonState(null);
+            } else {
+                updateActiveSkinnyButtonState(buttonId);
+                const activeMainView = document.getElementById('nora-kim-content')?.style.display === 'block' ? 'Nora' : (document.getElementById('zoe-brooks-content')?.style.display === 'block' ? 'Zoe' : 'Other/Inbox');
+                // Use currentMainView state variable instead of checking DOM display style
+                const salesforceContext = (currentMainView === 'zoeBrooks') ? 'no-contact-matched' : 'contact-matched';
+                console.log(`[SkinnyBar SF Click - Re-Open Logic] currentMainView: ${currentMainView}, Determined SF Context: ${salesforceContext}`);
+                showRightSidebarViewContent(viewId, salesforceContext);
+            }
         }
-      });
-    } catch (e) {
-      console.error('Error parsing saved skinny bar order:', e);
-      // Optionally clear the invalid item from localStorage
-      // localStorage.removeItem('skinnyBarOrder');
-    }
-  }
-}
+    });
 
-skinnyBarContainer.addEventListener('drop', (event) => {
-  event.preventDefault();
-  if (!draggedItem) return;
-
-  // Remove placeholder before dropping the actual item
-  if (skinnyBarPlaceholder && skinnyBarPlaceholder.parentNode) {
-    skinnyBarPlaceholder.parentNode.removeChild(skinnyBarPlaceholder);
+    // Drag and drop listeners for the container
+    skinnyBar.addEventListener('dragover', onDragOver);
+    skinnyBar.addEventListener('drop', onDrop);
   }
 
-  // 1. Record initial positions of SIBLING items
-  const siblings = [...skinnyBarContainer.querySelectorAll('.skinny-bar-item:not(.dragging)')];
-  const initialSiblingPositions = new Map();
-  siblings.forEach(sibling => {
-    initialSiblingPositions.set(sibling, sibling.getBoundingClientRect());
-  });
-
-  // 2. Determine where the draggedItem will be dropped
-  const dropTargetNode = getDragAfterElement(skinnyBarContainer, event.clientY);
-
-  // 3. Perform the actual DOM move for the draggedItem.
-  // The .dragging class is still on draggedItem. It will be removed in its 'dragend' handler.
-  if (dropTargetNode === null) {
-    skinnyBarContainer.appendChild(draggedItem);
-  } else {
-    skinnyBarContainer.insertBefore(draggedItem, dropTargetNode);
-  }
-
-  // 4. Animate siblings to their new positions (FLIP)
-  siblings.forEach(sibling => {
-    const oldPos = initialSiblingPositions.get(sibling);
-    // Ensure the sibling is still in the DOM and was part of the initial scan
-    if (!oldPos || !sibling.isConnected) return;
-
-    const newPos = sibling.getBoundingClientRect();
-
-    // Calculate the difference in position
-    const deltaY = oldPos.top - newPos.top;
-    // const deltaX = oldPos.left - newPos.left; // If horizontal movement was also possible
-
-    if (deltaY !== 0 /* || deltaX !== 0 */) {
-      // Invert: Apply transform to make it appear in its old position, without transition
-      sibling.style.transitionProperty = 'none'; // Temporarily disable CSS transitions for this element's transform
-      sibling.style.transform = `translateY(${deltaY}px)`;
-
-      // Force browser to apply the above style change immediately (reflow)
-      sibling.offsetHeight; // Reading a property like offsetHeight forces reflow
-
-      // Play: Re-enable transitions (by removing the inline 'none') and set transform to its final state (0px)
-      // The transition defined in the CSS class (.skinny-bar-item) will then animate it.
-      sibling.style.transitionProperty = ''; // Revert to CSS-defined transition behavior
-      sibling.style.transform = 'translateY(0px)';
-
-      // Clean up the inline transform style after the animation completes
-      sibling.addEventListener('transitionend', () => {
-        sibling.style.transform = '';
-      }, { once: true });
-    }
-  });
-  saveSkinnyBarOrder(); // Save order after a successful drop
-});
-
-function getDragAfterElement(container, y) {
-  const draggableElements = [...container.querySelectorAll('.skinny-bar-item:not(.dragging)')];
-
-  return draggableElements.reduce((closest, child) => {
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height / 2;
-    if (offset < 0 && offset > closest.offset) {
-      return { offset: offset, element: child };
-    } else {
-      return closest;
-    }
-  }, { offset: Number.NEGATIVE_INFINITY }).element;
-}
-
-// Set initial views
-showView('inbox');
-showRightSidebarView('right-view-profile'); // Default right sidebar view, or choose another
-
-// Load and apply saved skinny bar order on page load
-// Ensure this is called after the skinny bar items are definitely in the DOM.
-// Named function for drag start logic (ensure these are defined in a scope accessible by add/remove)
-function handleSkinnyItemDragStart(event) {
-  const item = event.target;
-  draggedItem = item;
-  setTimeout(() => {
-    if (item.classList) item.classList.add('dragging'); // Check if item still exists and has classList
-  }, 0);
-  if (skinnyBarPlaceholder && skinnyBarPlaceholder.parentNode) {
-    skinnyBarPlaceholder.parentNode.removeChild(skinnyBarPlaceholder);
-  }
-}
-
-// Named function for drag end logic
-function handleSkinnyItemDragEnd(event) {
-  // const item = event.target; // event.target might be different if drag ended outside
-  if (skinnyBarPlaceholder && skinnyBarPlaceholder.parentNode) {
-    skinnyBarPlaceholder.parentNode.removeChild(skinnyBarPlaceholder);
-  }
-  if (draggedItem && draggedItem.classList) { // Check draggedItem and classList
-    draggedItem.classList.remove('dragging');
-  }
-  draggedItem = null;
-}
-
-function addDragListenersToItemIfNeeded(item) {
-  if (!item.dataset.dragListenersAttached) {
-    item.addEventListener('dragstart', handleSkinnyItemDragStart);
-    item.addEventListener('dragend', handleSkinnyItemDragEnd);
-    item.dataset.dragListenersAttached = 'true';
-  }
-}
-
-function removeDragListenersFromItem(item) {
-  item.removeEventListener('dragstart', handleSkinnyItemDragStart);
-  item.removeEventListener('dragend', handleSkinnyItemDragEnd);
-  delete item.dataset.dragListenersAttached;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadAndApplySkinnyBarOrder(); // Keep existing call
-
-  // Pulsating animation for Gmail button
-  const gmailButton = document.getElementById('skinny-bar-gmail-btn');
-  if (gmailButton) {
-    gmailButton.classList.add('pulsate-animation');
-    const stopPulsating = () => {
-      gmailButton.classList.remove('pulsate-animation');
-    };
-    gmailButton.addEventListener('mouseenter', stopPulsating, { once: true });
-  }
-
-  // Skinny Bar Settings Menu Logic
-  const settingsBtn = document.getElementById('skinny-bar-settings-btn');
-  const settingsMenu = document.getElementById('skinny-bar-settings-menu');
-  const menuTogglesContainer = document.getElementById('skinny-bar-menu-item-toggles');
-  // skinnyBarContainer is already defined globally or in an accessible outer scope
-
-  const nonToggleableItemIdsInMenu = ['skinny-bar-add-btn', 'skinny-bar-settings-btn'];
-  const visibilityStorageKey = 'skinnyBarItemVisibility';
-
-  function getPersistedVisibilityStates() {
-    const storedStates = localStorage.getItem(visibilityStorageKey);
-    return storedStates ? JSON.parse(storedStates) : {};
-  }
-
-  function saveItemVisibilityState(itemId, isVisible) {
-    const states = getPersistedVisibilityStates();
-    states[itemId] = isVisible;
-    localStorage.setItem(visibilityStorageKey, JSON.stringify(states));
-  }
+  // Close settings menu on outside click
+  // document.addEventListener('click', (event) => {
+  //   if (settingsMenuElement && settingsMenuElement.classList.contains('settings-menu--open')) {
+  //     if (!settingsMenuElement.contains(event.target) && event.target !== settingsBtnElement && !settingsBtnElement.contains(event.target)) {
+  //       toggleSettingsMenu();
+  //     }
+  //   }
+  // });
   
-  function populateSettingsMenu() {
-    if (!skinnyBarContainer || !menuTogglesContainer) return;
-    menuTogglesContainer.innerHTML = ''; // Clear existing toggles
-
-    const items = Array.from(skinnyBarContainer.querySelectorAll('.skinny-bar-item'));
-    items.forEach(item => {
-      const itemId = item.id || item.getAttribute('href');
-      if (!itemId || nonToggleableItemIdsInMenu.includes(item.id)) {
-        return;
-      }
-
-      const itemName = item.title || itemId;
-      const savedStates = getPersistedVisibilityStates();
-      // Default to true (visible) if not in localStorage, or if item has no specific saved state
-      const isVisible = savedStates.hasOwnProperty(itemId) ? savedStates[itemId] : true;
-
-      const label = document.createElement('label');
-      label.className = 'd-px16 d-checkbox d-h32 d-w100p d-cur-pointer h:d-bgc-purple-100 d-d-flex d-fd-column d-ai-center'; // Removed d-py8, added d-h24 and flex alignment
-      
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.checked = isVisible;
-      input.className = 'd-checkbox__input';
-      input.setAttribute('data-item-id', itemId);
-
-      input.addEventListener('change', (event) => {
-        const targetItemId = event.target.getAttribute('data-item-id');
-        const itemToToggle = document.getElementById(targetItemId) || skinnyBarContainer.querySelector(`.skinny-bar-item[href='${targetItemId}']`);
-        if (itemToToggle) {
-          const show = event.target.checked;
-          itemToToggle.style.display = show ? '' : 'none';
-          itemToToggle.draggable = show;
-          if (show) { addDragListenersToItemIfNeeded(itemToToggle); } 
-          else { removeDragListenersFromItem(itemToToggle); }
-          saveItemVisibilityState(targetItemId, show);
-        }
-      });
-
-      const span = document.createElement('span');
-      span.className = 'd-checkbox__label';
-      span.textContent = itemName;
-
-      label.appendChild(input);
-      label.appendChild(span);
-      menuTogglesContainer.appendChild(label);
-    });
-  }
-
-  function toggleSettingsMenu() {
-    if (!settingsMenu) return;
-    const isOpen = settingsMenu.classList.contains('settings-menu--open');
-    if (isOpen) {
-      settingsMenu.classList.remove('settings-menu--open');
-      settingsMenu.style.display = 'none';
-    } else {
-      populateSettingsMenu(); // Populate/refresh items each time it opens
-      settingsMenu.classList.add('settings-menu--open');
-      settingsMenu.style.display = 'block'; 
-      // Position menu to the left of the settings button, aligned top
-      if(settingsBtn && settingsMenu && skinnyBarContainer){
-        const btnRect = settingsBtn.getBoundingClientRect();
-        const skinnyBarRect = skinnyBarContainer.getBoundingClientRect(); // Parent for relative positioning
-        
-        settingsMenu.style.top = (btnRect.top - skinnyBarRect.top) + 'px';
-        settingsMenu.style.left = (btnRect.left - skinnyBarRect.left - settingsMenu.offsetWidth - 8) + 'px'; // 8px gap to the left
-        settingsMenu.style.bottom = 'auto'; // Ensure bottom doesn't interfere if menu is tall
-      }
+  // SFDC Login button (dynamic content)
+  document.body.addEventListener('click', function(event) {
+    if (event.target && event.target.id === 'connect-salesforce-btn') {
+      // Assumed original logic for banner #connect-salesforce-btn
+      isSalesforceLoggedIn = true;
+      const mainViewActive = document.getElementById('nora-kim-content')?.style.display === 'block' ? 'noraKim' : 
+                             (document.getElementById('zoe-brooks-content')?.style.display === 'block' ? 'zoeBrooks' : 'noraKim');
+      showMainView(mainViewActive);
     }
-  }
+  });
 
-  if (settingsBtn) {
-    settingsBtn.addEventListener('click', (event) => {
-      event.stopPropagation();
-      toggleSettingsMenu();
-    });
-  }
+  // Initial setup
+  loadAndApplySkinnyBarOrder();
+  skinnyBar.querySelectorAll('button.skinny-bar-item').forEach(button => {
+      button.style.display = ''; // Set display to default (visible)
+      button.draggable = true;    // Make it draggable
+      // Add drag listeners after order and visibility are set
+      manageDragListeners(button, true); // Pass true for isDraggable
+  });
+  
+  showMainView('inbox'); // Start with inbox view
 
-  document.addEventListener('click', (event) => {
-    if (settingsMenu && settingsMenu.classList.contains('settings-menu--open')) {
-      if (!settingsMenu.contains(event.target) && event.target !== settingsBtn && !settingsBtn.contains(event.target)) {
-        toggleSettingsMenu();
+  // Delegated event listeners for dynamically loaded Salesforce login buttons
+  document.getElementById('right-sidebar')?.addEventListener('click', function(event) {
+    const connectButton = event.target.closest('.sfdc-connect-btn');
+    if (connectButton) {
+      const targetPage = connectButton.dataset.targetpage;
+      if (targetPage) {
+        isSalesforceLoggedIn = true;
+        loadSalesforcePage(targetPage);
+      } else {
+        console.error('Connect button clicked, but data-targetpage attribute is missing or empty.');
       }
     }
   });
 
-  function applyPersistedVisibilityStates() {
-    if (!skinnyBarContainer) return;
-    const states = getPersistedVisibilityStates();
-    const items = Array.from(skinnyBarContainer.querySelectorAll('.skinny-bar-item'));
-    
-    items.forEach(item => {
-      const itemId = item.id || item.getAttribute('href');
-      if (itemId && !nonToggleableItemIdsInMenu.includes(item.id)) { // Only apply to toggleable items
-        // Default to true (visible) if not in localStorage
-        const shouldBeVisible = states.hasOwnProperty(itemId) ? states[itemId] : true;
-        item.style.display = shouldBeVisible ? '' : 'none';
-        item.draggable = shouldBeVisible;
-        if (shouldBeVisible) { addDragListenersToItemIfNeeded(item); } 
-        else { removeDragListenersFromItem(item); }
-      }
-    });
+  const gmailBtn = document.getElementById('skinny-bar-gmail-btn');
+  if (gmailBtn) {
+    gmailBtn.classList.add('pulsate-animation');
+    gmailBtn.addEventListener('mouseenter', () => gmailBtn.classList.remove('pulsate-animation'), { once: true });
   }
-  applyPersistedVisibilityStates(); // Apply on load
 });
-
