@@ -343,11 +343,26 @@ document.addEventListener('DOMContentLoaded', function () {
   // SFDC Login button (dynamic content)
   document.body.addEventListener('click', function(event) {
     if (event.target && event.target.id === 'connect-salesforce-btn') {
-      // Assumed original logic for banner #connect-salesforce-btn
+      console.log('[Banner #connect-salesforce-btn CLICKED]');
       isSalesforceLoggedIn = true;
-      const mainViewActive = document.getElementById('nora-kim-content')?.style.display === 'block' ? 'noraKim' : 
-                             (document.getElementById('zoe-brooks-content')?.style.display === 'block' ? 'zoeBrooks' : 'noraKim');
-      showMainView(mainViewActive);
+      // 1. Ensure Nora Kim's main content is shown and sidebar is visible
+      showMainView('noraKim'); 
+      
+      // 2. Directly load Nora Kim's contact-matched view in the Salesforce app within the right sidebar
+      // The 'contact-matched' context in showRightSidebarViewContent will lead loadSalesforcePage
+      // to load 'salesforce-login-nora.html'.
+      showRightSidebarViewContent('right-view-salesforce', 'contact-matched');
+
+      // 3. Activate the Salesforce button in the skinny bar
+      updateActiveSkinnyButtonState('skinny-bar-salesforce-btn');
+      
+      // Ensure the right sidebar is visible (showMainView('noraKim') should do this, but as a safeguard)
+      if (rightSidebar && rightSidebar.classList.contains('hidden')) {
+        rightSidebar.classList.remove('hidden');
+      }
+      if (skinnyBar && skinnyBar.classList.contains('hidden')) {
+        skinnyBar.classList.remove('hidden');
+      }
     }
   });
 
