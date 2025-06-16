@@ -111,7 +111,9 @@ async function loadSalesforcePage(initialContextForSF) { // Renamed argument
 
   salesforcePageContentDiv.innerHTML = '<p>Loading...</p>'; // Indicate loading
   try {
-    const response = await fetch(`sidebar-apps/salesforce/${actualPageToLoad}.html`);
+    const salesforceViewsPath = 'sidebar-apps/salesforce/';
+    console.log(`[loadSalesforcePage] Called with context: ${initialContextForSF}, currentMainView: ${currentMainView}`);
+    const response = await fetch(`${salesforceViewsPath}${actualPageToLoad}.html`);
     if (!response.ok) throw new Error(`Failed to load ${actualPageToLoad}: ${response.statusText}`);
     salesforcePageContentDiv.innerHTML = await response.text();
   } catch (error) {

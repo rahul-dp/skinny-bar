@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Records</title>
+</head>
+<body>
+    <div class="d-d-flex d-fd-column d-g12">
+        <h1 class="d-fs-200 d-mb8">Match contact</h1>
+        <div class="d-input__wrapper">
+            <span class="base-input__icon--left d-input-icon--left d-input-icon"><svg class="d-icon--size-200 d-icon d-icon--search" data-qa="dt-icon" aria-hidden="true" role="img" data-name="Search" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.5 1a4.5 4.5 0 1 0 2.81 8.016l1.837 1.838a.5.5 0 1 0 .707-.707L9.016 8.308A4.5 4.5 0 0 0 5.5 1Zm0 1a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" fill="currentColor"></path></svg></span>
+            <input type="search" autocomplete="off" class="base-input__input d-input d-input-icon--left d-input-icon--right" placeholder="Search contact">
+            <span class="base-input__icon--right d-input-icon--right d-input-icon undefined" data-qa="dt-input-right-icon-wrapper">
+              <button class="base-button__button d-btn d-btn--muted d-btn--xs d-btn--circle d-btn--icon-only" data-qa="dt-button" type="button" aria-label="Clear search">
+                <span class="base-button__icon d-btn__icon d-btn__icon--left">...</span>
+              </button>
+            </span>
+          </div>
+        <ul class="contact-list d-d-flex d-fd-column" id="contactList">
+            <!-- Contacts will be dynamically populated here or listed statically -->
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-deatils" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Alex Johnson</div>
+                    <div class="d-fs-100">alex.johnson@example.com</div>
+                    <div class="d-fs-100">Marketing manager</div>
+                    <div class="d-fs-100">+1 000 000 0000</div>
+                    <div class="d-fs-100">Moscow</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-details" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Aaron Lee</div>
+                    <div class="d-fs-100">aaron.lee@example.com</div>
+                    <div class="d-fs-100">Sales Representative</div>
+                    <div class="d-fs-100">+1 415 123 4567</div>
+                    <div class="d-fs-100">San Francisco, CA</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-details" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Samantha Brown</div>
+                    <div class="d-fs-100">samantha.brown@example.com</div>
+                    <div class="d-fs-100">Software Engineer</div>
+                    <div class="d-fs-100">+1 415 123 4567</div>
+                    <div class="d-fs-100">New York, NY</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-details" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Evelyn Hall</div>
+                    <div class="d-fs-100">evelyn.hall@example.com</div>
+                    <div class="d-fs-100">Customer Support</div>
+                    <div class="d-fs-100">+1 415 123 4567</div>
+                    <div class="d-fs-100">Chicago, IL</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-details" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Emily Patel</div>
+                    <div class="d-fs-100">emily.patel@example.com</div>
+                    <div class="d-fs-100">UX Designer</div>
+                    <div class="d-fs-100">+1 000 000 1111</div>
+                    <div class="d-fs-100">Los Angeles, CA</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-details" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Olivia Lee</div>
+                    <div class="d-fs-100">olivia.lee@example.com</div>
+                    <div class="d-fs-100">Software Engineer</div>
+                    <div class="d-fs-100">+1 000 000 2222</div>
+                    <div class="d-fs-100">New York, NY</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-details" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Eva Brown</div>
+                    <div class="d-fs-100">eva.brown@example.com</div>
+                    <div class="d-fs-100">Product Manager</div>
+                    <div class="d-fs-100">+1 000 111 2222</div>
+                    <div class="d-fs-100">San Francisco, CA</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+            <li>
+                <div class="d-d-flex d-fd-row d-g8 d-p12 h:d-bgc-moderate d-bar8 d-ac-flex-start">
+                    <div id="contact-details" class="d-d-flex d-fd-column d-g2 d-w100p">
+                    <div class="d-fs-100 d-fw-semibold">Sofia Rodriguez</div>
+                    <div class="d-fs-100">sofia.rodriguez@example.com</div>
+                    <div class="d-fs-100">Data Analyst</div>
+                    <div class="d-fs-100">+1 000 111 3333</div>
+                    <div class="d-fs-100">Mexico City</div>
+                    </div>
+                    <a href="#link" class="d-link d-h100p d-fs-100 d-td-none h:d-td-underline">Match</a>
+                    
+                </div>
+                
+            </li>
+
+        </ul>
+    </div>
+    <script>
+        // Basic search functionality (optional, for future enhancement)
+        const searchInput = document.getElementById('searchContacts');
+        const contactList = document.getElementById('contactList');
+        const contacts = Array.from(contactList.getElementsByTagName('li'));
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            contacts.forEach(contact => {
+                const name = contact.querySelector('.contact-name').textContent.toLowerCase();
+                const email = contact.querySelector('.contact-email').textContent.toLowerCase();
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    contact.style.display = '';
+                } else {
+                    contact.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
